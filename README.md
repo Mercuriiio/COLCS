@@ -10,3 +10,4 @@ https://drive.google.com/drive/folders/1cROx2J3kbA3VSOEjJeQDKSURD5vEj84-?usp=sha
 ```python
 python train.py --input_h5ad_path="./data/preprocessed/csv/hnsc_rb1_preprocessed.h5ad" --epochs 100 --lr 1 --batch_size 512 --pcl_r 1024 --cos
 ```
+## Citation
