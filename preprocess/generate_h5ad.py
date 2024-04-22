@@ -91,10 +91,8 @@ def preprocess_csv_to_h5ad(
 
             adata = sc.AnnData(X=count_frame, obs=label_frame)
             print("Read data from csv file: {}".format(count_csv_path))
-            print("Read laebl from csv file: {}".format(label_csv_path))
         else:
             adata = sc.AnnData(X=count_frame.T)
-            print("Read data from csv file: {}".format(count_csv_path))
 
         _, counts_file_name = os.path.split(count_csv_path)
         save_file_name = counts_file_name.replace(".csv", ".h5ad").replace("_counts", "")
