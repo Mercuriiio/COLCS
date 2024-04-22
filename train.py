@@ -215,7 +215,6 @@ def main_worker(args):
         sampler=eval_sampler, num_workers=args.workers, pin_memory=True)
 
     # 2. Create Model
-    # print("=> creating model 'MLP'")
     model = pcl.builder.MoCo(
         pcl.builder.MLPEncoder,
         int(train_dataset.num_genes),
