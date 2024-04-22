@@ -221,9 +221,10 @@ def main_worker(args):
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.999))
 
+    # 3. Pretrain Model
+    print('********** Pretrain the model **********')
     pretrain(args, model, train_loader, criterion, optimizer, pre_traain=True)
 
-    # cluster parameter initiate
     model.eval()
     for i, (images, index, label) in enumerate(train_loader):
         _, _, hidden, _ = model(im_q=images[0], im_k=images[1])
@@ -231,8 +232,7 @@ def main_worker(args):
     y_pred = kmeans.fit_predict(hidden.data.cpu().numpy())
     model.cluster_layer.data = torch.tensor(kmeans.cluster_centers_)
 
-    # 3. Train Encoder
-
+    # 4. Fine-tune Model
     print('********** Fine-tune the model **********')
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
 
@@ -243,10 +243,8 @@ def main_worker(args):
             _, _, _, tmp_q = model(im_q=images[0], im_k=images[1])
         p = target_distribution(tmp_q)
 
-        # train for one epoch
         train_unsupervised_metrics = train(train_loader, model, criterion, optimizer, epoch, args, p)
 
-        # training log & unsupervised metrics
         if epoch % args.log_freq == 0 or epoch == args.epochs - 1:
             if epoch == 0:
                 with open(os.path.join(save_path, 'log_COLCS_{}.txt'.format(dataset_name)), "w") as f:
@@ -258,11 +256,9 @@ def main_worker(args):
                     f.writelines(f"{epoch}\t" + '\t'.join(
                         (str(train_unsupervised_metrics[key]) for key in train_unsupervised_metrics.keys())) + "\n")
 
-        # inference log & supervised metrics
         if (epoch+1) % 1 == 0:
             embeddings, gt_labels = inference(eval_loader, model)
 
-            # perform kmeans
             if args.cluster_name == "kmeans":
                 if args.num_cluster > 0:
                     num_cluster = args.num_cluster
@@ -280,8 +276,7 @@ def main_worker(args):
                 else:
                     best_pd_labels = None
 
-    # 4. Final Savings
-    # save feature & labels
+    # 5. Final Savings
     np.savetxt(os.path.join(save_path, "feature_COLCS_{}.csv".format(dataset_name)), embeddings, delimiter=',')
 
 
@@ -302,10 +297,8 @@ def main_worker(args):
             f.write(record_string)
             f.close()
 
-
 def pretrain(args, model, train_loader, criterion, optimizer, pre_traain=True):
-    if pre_traain:
-        print('********** Pretrain the model **********')
+    if pre_train:
         for epoch in range(args.start_epoch):
             adjust_learning_rate(optimizer, epoch, args)
             train_unsupervised_metrics = pre_train(train_loader, model, criterion, optimizer, epoch, args)
@@ -332,13 +325,10 @@ def train(train_loader, model, criterion, optimizer, epoch, args, p):
 
     end = time.time()
     for i, (images, index, label) in enumerate(train_loader):
-        # measure data loading time
         data_time.update(time.time() - end)
 
-        # compute output
         output, target, hidden, q = model(im_q=images[0], im_k=images[1], cluster_result=None, index=index)
 
-        # InfoNCE loss
         info_loss = criterion(output, target)
         kl_loss = F.kl_div(q.log(), p, reduction='batchmean')
         loss = info_loss + 1e5 * kl_loss
@@ -347,7 +337,6 @@ def train(train_loader, model, criterion, optimizer, epoch, args, p):
         acc = accuracy(output, target)[0]
         acc_inst.update(acc[0], images[0].size(0))
 
-        # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -374,29 +363,24 @@ def pre_train(train_loader, model, criterion, optimizer, epoch, args):
         [batch_time, data_time, losses, acc_inst],
         prefix="Epoch: [{}]".format(epoch))
 
-    # switch to train mode
     model.train()
 
     end = time.time()
     for i, (images, index, label) in enumerate(train_loader):
-        # measure data loading time
         data_time.update(time.time() - end)
 
         output, target, hidden, q = model(im_q=images[0], im_k=images[1], cluster_result=None, index=index)
 
-        # InfoNCE loss
         loss = criterion(output, target)
 
         losses.update(loss.item(), images[0].size(0))
         acc = accuracy(output, target)[0]
         acc_inst.update(acc[0], images[0].size(0))
 
-        # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
 
