@@ -49,9 +49,9 @@ class Classification_model(nn.Module):
         return feat, x
 
 
-class MoCo(nn.Module):
+class COLCS(nn.Module):
     def __init__(self, base_encoder, num_genes=10000,  dim=16, r=512, m=0.999, T=0.2, n=6):
-        super(MoCo, self).__init__()
+        super(COLCS, self).__init__()
 
         self.r = r
         self.m = m
