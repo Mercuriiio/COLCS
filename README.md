@@ -2,7 +2,7 @@
 ## A novel contrastive-learning-based deep neural network for cancer subtypes identification by integrating multi-omics data
 ## Introduction
 We introduced an end-to-end contrastive-learning-based deep neural network called COLCS, to distinguish the subtypes of the patients with the same tumor. By applying to nine cancer datasets, the experiments show COLCS outperformed the existing methods and can get biologically meaningful cancer subtype labels for cancer-related gene identification.
-## Running example
+## Tutorial
 ### 1. Download Dataset.
 You can download the raw and preprocessed data for the experiments at the following website:  
    
@@ -19,6 +19,7 @@ Where the original input and save path of the data needs to be changed according
 python preprocess/generate_h5ad.py --count_csv_path="./data/original/csv/hnsc_rb1.csv" --save_h5ad_dir="./data/preprocessed/csv/" --filter --norm --log --scale --select_hvg
 ```
 ### 2. Training.
+The COLCS training process is divided into two phases, a pre-training phase and a fine-tuning phase, details of which can be found in [train.py](https://github.com/Mercuriiio/COLCS/blob/main/train.py). When performing model training, you need to specify the path of preprocessed data, as well as parameters such as the number of training epochs and the learning rate. The following is an example of a training command.   
 ```python
 python train.py --input_h5ad_path="./data/preprocessed/csv/hnsc_rb1_preprocessed.h5ad" --epochs 100 --lr 1 --batch_size 512 --pcl_r 1024 --cos
 ```
