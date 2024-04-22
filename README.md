@@ -21,5 +21,5 @@ The COLCS training process is divided into two phases, a pre-training phase and 
 ```python
 python train.py --input_h5ad_path="./data/preprocessed/csv/hnsc_rb1_preprocessed.h5ad" --epochs 100 --lr 1 --batch_size 512 --pcl_r 1024 --cos
 ```
-where --epochs is the number of pre-training epochs and the number of fine-tuning epochs is set using --start_epoch.
+where ```--epochs``` is the number of pre-training epochs and the number of fine-tuning epochs is set using ```--start_epoch```.
 ## Citation
