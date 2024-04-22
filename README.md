@@ -16,10 +16,10 @@ where the original input and save path of the data needs to be changed according
 ```python
 python preprocess/generate_h5ad.py --count_csv_path="./data/original/csv/hnsc_rb1.csv" --save_h5ad_dir="./data/preprocessed/csv/" --filter --norm --log --scale --select_hvg
 ```
-### 2. Training.
+### 2. Training and Testing.
 The COLCS training process is divided into two phases, a pre-training phase and a fine-tuning phase, details of which can be found in [train.py](https://github.com/Mercuriiio/COLCS/blob/main/train.py). When performing model training, you need to specify the path of preprocessed data, as well as parameters such as the number of training epochs and the learning rate. The following is an example of a training command.   
 ```python
 python train.py --input_h5ad_path="./data/preprocessed/csv/hnsc_rb1_preprocessed.h5ad" --epochs 100 --lr 1 --batch_size 512 --pcl_r 1024 --cos
 ```
-where ```--epochs``` is the number of pre-training epochs and the number of fine-tuning epochs is set using ```--start_epoch```. ```--lr``` is the initial learning rate and ```--pcl_r``` is the number of negative pairs. ```--cos``` indicates the learning rate decay strategy using the cosine schedule.
-
+where ```--epochs``` is the number of pre-training epochs and the number of fine-tuning epochs is set using ```--start_epoch```. ```--lr``` is the initial learning rate and ```--pcl_r``` is the number of negative pairs. ```--cos``` indicates the learning rate decay strategy using the cosine schedule.  
+ It is worth noting that both the training and testing modules of COCLS are in the [train.py](https://github.com/Mercuriiio/COLCS/blob/main/train.py) file, and the models from the pre-training phase will be saved in the [checkpoints](https://github.com/Mercuriiio/COLCS/tree/main/checkpoints) folder.
