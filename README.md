@@ -6,6 +6,7 @@ We introduced an end-to-end contrastive-learning-based deep neural network calle
 <div align=center>
 <img src="https://github.com/Mercuriiio/COLCS/blob/main/Framework.png" width="618px">
 </div>
+
 ## Tutorial
 ### 1. Download Dataset.
 You can download the raw and preprocessed data for the experiments at the following website:  
