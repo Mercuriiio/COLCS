@@ -23,3 +23,5 @@ python train.py --input_h5ad_path="./data/preprocessed/csv/hnsc_rb1_preprocessed
 ```
 where ```--epochs``` is the number of pre-training epochs and the number of fine-tuning epochs is set using ```--start_epoch```. ```--lr``` is the initial learning rate and ```--pcl_r``` is the number of negative pairs. ```--cos``` indicates the learning rate decay strategy using the cosine schedule.  
  It is worth noting that both the training and testing modules of COCLS are in the [train.py](https://github.com/Mercuriiio/COLCS/blob/main/train.py) file, and the models from the pre-training phase will be saved in the [checkpoints](https://github.com/Mercuriiio/COLCS/tree/main/checkpoints) folder.
+### 3. Results.
+COCLS automatically saves the results in the [results](https://github.com/Mercuriiio/COLCS/tree/main/result/COLCS) folder during the test. The model will save the self-supervised feature information of the multi-omics data in the pre-training phase, as well as the clustering results for each epoch.
