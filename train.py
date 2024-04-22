@@ -120,7 +120,7 @@ parser.add_argument('-l', '--log_freq', default=10, type=int,
 
 parser.add_argument('--exp_dir', default='./experiment_pcl', type=str,
                     help='experiment directory')
-# CJY metric
+
 parser.add_argument('--save_dir', default='./result', type=str,
                     help='result saving directory')
 
@@ -162,14 +162,11 @@ def main_worker(args):
 
     # Define Transformation
     args_transformation = {
-        # crop
-        # without resize, it's better to remove crop
-
         # mask
         'mask_percentage': 0.2,
         'apply_mask_prob': args.aug_prob,
 
-        # (Add) gaussian noise
+        # gaussian noise
         'noise_percentage': 0.8,
         'sigma': 0.2,
         'apply_noise_prob': args.aug_prob,
@@ -209,7 +206,6 @@ def main_worker(args):
         train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None),
         num_workers=args.workers, pin_memory=True, sampler=train_sampler, drop_last=True)
 
-    # dataloader for center-cropped images, use larger batch size to increase speed
     eval_loader = torch.utils.data.DataLoader(
         eval_dataset, batch_size=args.batch_size * 5, shuffle=False,
         sampler=eval_sampler, num_workers=args.workers, pin_memory=True)
@@ -339,8 +335,6 @@ def train(train_loader, model, criterion, optimizer, epoch, args, p):
         # measure data loading time
         data_time.update(time.time() - end)
 
-        # import pdb; pdb.set_trace()
-
         # compute output
         output, target, hidden, q = model(im_q=images[0], im_k=images[1], cluster_result=None, index=index)
 
@@ -388,7 +382,6 @@ def pre_train(train_loader, model, criterion, optimizer, epoch, args):
         # measure data loading time
         data_time.update(time.time() - end)
 
-        # compute output
         output, target, hidden, q = model(im_q=images[0], im_k=images[1], cluster_result=None, index=index)
 
         # InfoNCE loss
