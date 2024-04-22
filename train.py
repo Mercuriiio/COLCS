@@ -211,7 +211,7 @@ def main_worker(args):
         sampler=eval_sampler, num_workers=args.workers, pin_memory=True)
 
     # 2. Create Model
-    model = pcl.builder.MoCo(
+    model = pcl.builder.COLCS(
         pcl.builder.MLPEncoder,
         int(train_dataset.num_genes),
         args.low_dim, args.pcl_r, args.moco_m, args.temperature, args.num_cluster)
@@ -231,7 +231,7 @@ def main_worker(args):
     y_pred = kmeans.fit_predict(hidden.data.cpu().numpy())
     model.cluster_layer.data = torch.tensor(kmeans.cluster_centers_)
 
-    # 2. Train Encoder
+    # 3. Train Encoder
 
     print('********** Fine-tune the model **********')
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
@@ -280,7 +280,7 @@ def main_worker(args):
                 else:
                     best_pd_labels = None
 
-    # 3. Final Savings
+    # 4. Final Savings
     # save feature & labels
     np.savetxt(os.path.join(save_path, "feature_COLCS_{}.csv".format(dataset_name)), embeddings, delimiter=',')
 
