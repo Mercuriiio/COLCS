@@ -44,9 +44,6 @@ class ImageFolderInstance(datasets.ImageFolder):
         return sample, index
 
 
-
-
-
 class scRNAMatrixInstance(Dataset):
     def __init__(self,
                  adata: AnnData = None,
@@ -59,8 +56,6 @@ class scRNAMatrixInstance(Dataset):
 
         self.adata = adata
 
-        # data
-        # scipy.sparse.csr.csr_matrix or numpy.ndarray
         if isinstance(self.adata.X, np.ndarray):
             self.data = self.adata.X
         else:
@@ -74,7 +69,6 @@ class scRNAMatrixInstance(Dataset):
             self.label_decoder = {v: k for k, v in self.label_encoder.items()}
         else:
             self.label = None
-            print("Can not find corresponding labels")
 
         # do the transformation
         self.transform = transform
@@ -85,15 +79,12 @@ class scRNAMatrixInstance(Dataset):
 
         
     def RandomTransform(self, sample):
-        #tr_sample = deepcopy(sample)
         tr = transformation(self.dataset_for_transform, sample)
         
-        # the crop operation
-
         # Mask
         tr.random_mask(self.args_transformation['mask_percentage'], self.args_transformation['apply_mask_prob'])
 
-        # (Add) Gaussian noise
+        # Gaussian noise
         tr.random_gaussian_noise(self.args_transformation['noise_percentage'], self.args_transformation['sigma'], self.args_transformation['apply_noise_prob'])
 
         # inner swap
@@ -212,7 +203,6 @@ class transformation():
                            cross_percentage: float=0.25,
                            apply_cross_prob: float=0.4):
         
-        # it's better to choose a similar profile to crossover
         
         s = np.random.uniform(0,1)
         if s<apply_cross_prob:
@@ -220,10 +210,7 @@ class transformation():
             cross_idx = np.random.randint(self.cell_num)
             cross_instance = self.dataset[cross_idx]
             
-            # build the mask
             mask = self.build_mask(cross_percentage)
-            
-            # apply instance crossover with p
             
             tmp = cross_instance[mask].copy()
         
@@ -235,7 +222,6 @@ class transformation():
                                  apply_mutation_prob: float=0.2,
                                  new=False):
 
-        # 
         s = np.random.uniform(0,1)
 
         # the speed is too slow
